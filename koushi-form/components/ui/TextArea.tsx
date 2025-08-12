@@ -33,7 +33,7 @@ export const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
       }
     };
 
-    const currentValue = value || '';
+    const currentValue = String(value || '');
     const currentLength = currentValue.length;
     const isNearLimit = maxLength && currentLength > maxLength * 0.8;
     const isOverLimit = maxLength && currentLength > maxLength;
@@ -90,3 +90,5 @@ export const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
     );
   }
 );
+
+TextArea.displayName = 'TextArea';

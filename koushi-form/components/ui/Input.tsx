@@ -32,7 +32,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       }
     };
 
-    const currentValue = value || '';
+    const currentValue = String(value || '');
     const currentLength = currentValue.length;
   const isNearLimit = maxLength && currentLength > maxLength * 0.8;
   const isOverLimit = maxLength && currentLength > maxLength;
@@ -87,3 +87,5 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     </div>
   );
 });
+
+Input.displayName = 'Input';
