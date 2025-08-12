@@ -32,9 +32,12 @@ export const FormContainer: React.FC<FormContainerProps> = ({ unit }) => {
   
   const { submitForm, isSubmitting, submitError } = useFormSubmit();
 
-  // LocalStorageから保存されたデータを復元
+  // SessionStorageから保存されたデータを復元（セッション終了時に自動クリア）
   useEffect(() => {
-    const savedData = localStorage.getItem(`form-data-${unit.slug}`);
+    // 古いlocalStorageデータをクリーンアップ
+    localStorage.removeItem(`form-data-${unit.slug}`);
+    
+    const savedData = sessionStorage.getItem(`form-data-${unit.slug}`);
     if (savedData) {
       try {
         const parsed = JSON.parse(savedData);
@@ -52,10 +55,35 @@ export const FormContainer: React.FC<FormContainerProps> = ({ unit }) => {
     }
   }, [unit]);
 
-  // フォームデータをLocalStorageに保存
+  // フォームデータをSessionStorageに保存（セッション終了時に自動削除）
   useEffect(() => {
-    localStorage.setItem(`form-data-${unit.slug}`, JSON.stringify(formData));
+    sessionStorage.setItem(`form-data-${unit.slug}`, JSON.stringify(formData));
   }, [formData, unit.slug]);
+
+  // ページ離脱時やセッション終了時のクリーンアップ
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // セッション終了時にデータをクリア
+      sessionStorage.removeItem(`form-data-${unit.slug}`);
+    };
+
+    const handleVisibilityChange = () => {
+      // ページが非表示になった時（別タブに移動、ブラウザを閉じるなど）
+      if (document.visibilityState === 'hidden') {
+        sessionStorage.removeItem(`form-data-${unit.slug}`);
+      }
+    };
+
+    // イベントリスナーを追加
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      // クリーンアップ
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [unit.slug]);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -141,8 +169,24 @@ export const FormContainer: React.FC<FormContainerProps> = ({ unit }) => {
     const result = await submitForm(formData);
     if (result?.success) {
       setIsSubmitted(true);
-      localStorage.removeItem(`form-data-${unit.slug}`);
+      // 送信完了時にセッションデータをクリア
+      sessionStorage.removeItem(`form-data-${unit.slug}`);
     }
+  };
+
+  const handleReset = () => {
+    // フォームを初期状態にリセット
+    setFormData({
+      ...defaultFormData,
+      seminarInfo: {
+        ...defaultFormData.seminarInfo,
+        unitName: unit.name,
+        unitSlug: unit.slug,
+      }
+    });
+    setErrors({});
+    // セッションストレージからも削除
+    sessionStorage.removeItem(`form-data-${unit.slug}`);
   };
 
   if (isSubmitted) {
@@ -208,7 +252,16 @@ export const FormContainer: React.FC<FormContainerProps> = ({ unit }) => {
           </div>
         )}
 
-        <div className="flex justify-center pt-8">
+        <div className="flex justify-center gap-4 pt-8">
+          <Button
+            type="button"
+            onClick={handleReset}
+            variant="outline"
+            size="lg"
+            className="min-w-32"
+          >
+            リセット
+          </Button>
           <Button
             type="submit"
             disabled={isSubmitting}

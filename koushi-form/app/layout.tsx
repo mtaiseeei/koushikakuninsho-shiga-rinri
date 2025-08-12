@@ -9,7 +9,7 @@ const notoSansJP = Noto_Sans_JP({
 
 export const metadata: Metadata = {
   title: "講師確認書フォーム | 滋賀県倫理法人会",
-  description: "滋賀県倫理法人会の講師確認書統一フォームシステム",
+  description: "滋賀県倫理法人会 講師確認書統一フォームシステム",
 };
 
 export default function RootLayout({
