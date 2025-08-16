@@ -32,7 +32,7 @@ export async function uploadToDrive(
 
     // ファイルをアップロード
     console.log('ファイルアップロード実行中...');
-    const createParams: any = {
+    const createParams: Record<string, unknown> = {
       requestBody: fileMetadata,
       media: {
         mimeType: mimeType,
@@ -56,7 +56,7 @@ export async function uploadToDrive(
 
     // ファイルを共有設定（リンクを知っている人が閲覧可能）
     console.log('共有設定を変更中...');
-    const permissionParams: any = {
+    const permissionParams: Record<string, unknown> = {
       fileId: response.data.id,
       requestBody: {
         role: 'reader',

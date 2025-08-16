@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { Container } from '@/components/layout/Container';
 import { Button } from '@/components/ui/Button';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { ProgressBar } from '@/components/ui/ProgressBar';
+// import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+// import { ProgressBar } from '@/components/ui/ProgressBar';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { FullScreenLoader } from '@/components/ui/FullScreenLoader';
 import { SeminarInfo } from './SeminarInfo';
@@ -194,7 +194,7 @@ export const FormContainer: React.FC<FormContainerProps> = ({ unit }) => {
     console.log("送信するフォームデータ:", formData);
     
     // 送信前にファイルをアップロード
-    let updatedFormData = { ...formData };
+    const updatedFormData = { ...formData };
     
     // 進捗リセット
     setUploadProgress(0);

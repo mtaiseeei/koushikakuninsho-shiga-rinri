@@ -19,8 +19,8 @@ export const PresentationStyleComponent: React.FC<PresentationStyleProps> = ({
   data,
   onChange,
   errors = {},
-  unitSlug,
-  speakerName
+  // unitSlug,  // 将来の使用のために保持
+  // speakerName  // 将来の使用のために保持
 }) => {
 
   const handleHandoutChange = (value: string) => {
@@ -107,7 +107,6 @@ export const PresentationStyleComponent: React.FC<PresentationStyleProps> = ({
               onFileRemove={handleHandoutFileRemove}
               isUploading={false}
               error={errors.handoutFileUrl}
-              uploadedUrl={data.handoutFile ? URL.createObjectURL(data.handoutFile) : data.handoutFileUrl}
               helpText="PDF・Word形式対応（最大10MB）"
             />
           </div>

@@ -19,8 +19,8 @@ export const SpeechInfoComponent: React.FC<SpeechInfoProps> = ({
   data,
   onChange,
   errors = {},
-  unitSlug,
-  speakerName
+  // unitSlug,  // 将来の使用のために保持
+  // speakerName  // 将来の使用のために保持
 }) => {
 
   const handleInputChange = (field: keyof SpeechInfo, value: string) => {
@@ -108,7 +108,6 @@ export const SpeechInfoComponent: React.FC<SpeechInfoProps> = ({
           onFileRemove={handleProfileImageRemove}
           isUploading={false}
           error={errors.profileImageUrl}
-          uploadedUrl={data.profileImageFile ? URL.createObjectURL(data.profileImageFile) : data.profileImageUrl}
           helpText="PNG・JPG・HEIC形式対応（最大5MB）"
         />
       </div>

@@ -35,7 +35,7 @@ export async function GET() {
 
     // 認証のテスト
     console.log('認証テスト開始...');
-    const authClient = await auth.authorize();
+    await auth.authorize();
     console.log('認証成功！Access Token取得');
 
     // Drive APIを使用してアクセステスト
@@ -59,11 +59,12 @@ export async function GET() {
           fields: 'id, name, mimeType, permissions'
         });
         console.log('フォルダアクセス成功:', folder.data);
-      } catch (folderError: any) {
+      } catch (folderError) {
+        const err = folderError as { message?: string; code?: string; errors?: unknown };
         console.error('フォルダアクセスエラー:', {
-          message: folderError.message,
-          code: folderError.code,
-          errors: folderError.errors
+          message: err.message,
+          code: err.code,
+          errors: err.errors
         });
       }
     }
@@ -77,11 +78,12 @@ export async function GET() {
           spreadsheetId: sheetsId,
         });
         console.log('スプレッドシートアクセス成功:', spreadsheet.data.properties?.title);
-      } catch (sheetsError: any) {
+      } catch (sheetsError) {
+        const err = sheetsError as { message?: string; code?: string; errors?: unknown };
         console.error('スプレッドシートアクセスエラー:', {
-          message: sheetsError.message,
-          code: sheetsError.code,
-          errors: sheetsError.errors
+          message: err.message,
+          code: err.code,
+          errors: err.errors
         });
       }
     }
@@ -98,14 +100,15 @@ export async function GET() {
       fileCount: fileList.data.files?.length || 0
     });
 
-  } catch (error: any) {
+  } catch (error) {
+    const err = error as { message?: string; code?: string; errors?: unknown };
     console.error('認証テストエラー:', error);
     return NextResponse.json({
       success: false,
       error: '認証テスト失敗',
-      detail: error.message,
-      errorCode: error.code,
-      errors: error.errors
+      detail: err.message,
+      errorCode: err.code,
+      errors: err.errors
     }, { status: 500 });
   }
 }
