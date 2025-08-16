@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { FormData } from '@/types/form';
+import { KoushiFormData } from '@/types/form';
 import { SubmitResponse } from '@/types/api';
 
 export function useFormSubmit() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const submitForm = async (data: FormData): Promise<SubmitResponse | null> => {
+  const submitForm = async (data: KoushiFormData): Promise<SubmitResponse | null> => {
     setIsSubmitting(true);
     setSubmitError(null);
 
@@ -34,5 +34,6 @@ export function useFormSubmit() {
     submitForm,
     isSubmitting,
     submitError,
+    setSubmitError,
   };
 }

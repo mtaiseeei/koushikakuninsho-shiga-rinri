@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/Input';
 import { TextArea } from '@/components/ui/TextArea';
 import { FileUpload } from '@/components/ui/FileUpload';
 import { SpeechInfo } from '@/types/form';
-import { useFileUpload } from '@/lib/hooks/useFileUpload';
 
 interface SpeechInfoProps {
   data: SpeechInfo;
@@ -23,28 +22,19 @@ export const SpeechInfoComponent: React.FC<SpeechInfoProps> = ({
   unitSlug,
   speakerName
 }) => {
-  const { uploadFile, isUploading } = useFileUpload({
-    type: 'profile',
-    unitSlug,
-    speakerName
-  });
 
   const handleInputChange = (field: keyof SpeechInfo, value: string) => {
     onChange({ ...data, [field]: value });
   };
 
   const handleProfileImageUpload = async (file: File) => {
-    console.log("プロフィール画像アップロード開始:", file.name);
-    const fileUrl = await uploadFile(file);
-    console.log("アップロード結果:", fileUrl);
-    if (fileUrl) {
-      console.log("フォームデータ更新 - profileImageUrl:", fileUrl);
-      onChange({ ...data, profileImageUrl: fileUrl });
-    }
+    console.log("プロフィール画像選択:", file.name);
+    // ファイルを保持（アップロードは送信時に実行）
+    onChange({ ...data, profileImageFile: file });
   };
 
   const handleProfileImageRemove = () => {
-    onChange({ ...data, profileImageUrl: undefined });
+    onChange({ ...data, profileImageFile: undefined, profileImageUrl: undefined });
   };
 
   return (
@@ -116,9 +106,9 @@ export const SpeechInfoComponent: React.FC<SpeechInfoProps> = ({
           maxSize={5 * 1024 * 1024}
           onFileSelect={handleProfileImageUpload}
           onFileRemove={handleProfileImageRemove}
-          isUploading={isUploading}
+          isUploading={false}
           error={errors.profileImageUrl}
-          uploadedUrl={data.profileImageUrl}
+          uploadedUrl={data.profileImageFile ? URL.createObjectURL(data.profileImageFile) : data.profileImageUrl}
           helpText="PNG・JPG・HEIC形式対応（最大5MB）"
         />
       </div>

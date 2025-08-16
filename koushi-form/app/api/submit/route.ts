@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { appendToSheet } from '@/lib/services/google-sheets';
-import { FormData } from '@/types/form';
+import { KoushiFormData } from '@/types/form';
 
 // Node.jsランタイムを明示的に指定
 export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
-    const data: FormData = await request.json();
+    const data: KoushiFormData = await request.json();
     
     console.log('=== フォーム送信処理開始 ===');
     console.log('受信データ:', {

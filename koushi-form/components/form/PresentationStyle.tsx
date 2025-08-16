@@ -6,7 +6,6 @@ import { RadioGroup } from '@/components/ui/RadioGroup';
 import { Select } from '@/components/ui/Select';
 import { FileUpload } from '@/components/ui/FileUpload';
 import { PresentationStyle } from '@/types/form';
-import { useFileUpload } from '@/lib/hooks/useFileUpload';
 
 interface PresentationStyleProps {
   data: PresentationStyle;
@@ -23,17 +22,13 @@ export const PresentationStyleComponent: React.FC<PresentationStyleProps> = ({
   unitSlug,
   speakerName
 }) => {
-  const { uploadFile, isUploading } = useFileUpload({
-    type: 'handout',
-    unitSlug,
-    speakerName
-  });
 
   const handleHandoutChange = (value: string) => {
     onChange({
       ...data,
       handout: value as 'bring' | 'none' | 'print',
-      handoutFileUrl: value !== 'print' ? undefined : data.handoutFileUrl
+      handoutFileUrl: value !== 'print' ? undefined : data.handoutFileUrl,
+      handoutFile: value !== 'print' ? undefined : data.handoutFile
     });
   };
 
@@ -66,14 +61,13 @@ export const PresentationStyleComponent: React.FC<PresentationStyleProps> = ({
   };
 
   const handleHandoutFileUpload = async (file: File) => {
-    const fileUrl = await uploadFile(file);
-    if (fileUrl) {
-      onChange({ ...data, handoutFileUrl: fileUrl });
-    }
+    console.log("レジュメファイル選択:", file.name);
+    // ファイルを保持（アップロードは送信時に実行）
+    onChange({ ...data, handoutFile: file });
   };
 
   const handleHandoutFileRemove = () => {
-    onChange({ ...data, handoutFileUrl: undefined });
+    onChange({ ...data, handoutFile: undefined, handoutFileUrl: undefined });
   };
 
   return (
@@ -111,9 +105,9 @@ export const PresentationStyleComponent: React.FC<PresentationStyleProps> = ({
               maxSize={10 * 1024 * 1024} // 10MB
               onFileSelect={handleHandoutFileUpload}
               onFileRemove={handleHandoutFileRemove}
-              isUploading={isUploading}
+              isUploading={false}
               error={errors.handoutFileUrl}
-              uploadedUrl={data.handoutFileUrl}
+              uploadedUrl={data.handoutFile ? URL.createObjectURL(data.handoutFile) : data.handoutFileUrl}
               helpText="PDF・Word形式対応（最大10MB）"
             />
           </div>

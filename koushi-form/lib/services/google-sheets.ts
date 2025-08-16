@@ -1,10 +1,10 @@
 import { getSheetsClient } from '@/config/google-api';
-import { FormData } from '@/types/form';
+import { KoushiFormData } from '@/types/form';
 
 /**
  * フォームデータをGoogle Sheetsに追加
  */
-export async function appendToSheet(formData: FormData): Promise<void> {
+export async function appendToSheet(formData: KoushiFormData): Promise<void> {
   try {
     console.log('Google Sheetsへのデータ送信開始');
     console.log('プロフィール画像URL:', formData.speechInfo.profileImageUrl);

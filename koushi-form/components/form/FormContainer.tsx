@@ -4,12 +4,15 @@ import React, { useState, useEffect } from 'react';
 import { Container } from '@/components/layout/Container';
 import { Button } from '@/components/ui/Button';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { ProgressBar } from '@/components/ui/ProgressBar';
+import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
+import { FullScreenLoader } from '@/components/ui/FullScreenLoader';
 import { SeminarInfo } from './SeminarInfo';
 import { SpeakerBasicInfo } from './SpeakerBasicInfo';
 import { SpeechInfoComponent } from './SpeechInfo';
 import { PresentationStyleComponent } from './PresentationStyle';
 import { AccommodationComponent } from './Accommodation';
-import { FormData, defaultFormData } from '@/types/form';
+import { KoushiFormData, defaultFormData } from '@/types/form';
 import { Unit } from '@/types/unit';
 import { useFormSubmit } from '@/lib/hooks/useFormSubmit';
 
@@ -18,7 +21,7 @@ interface FormContainerProps {
 }
 
 export const FormContainer: React.FC<FormContainerProps> = ({ unit }) => {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<KoushiFormData>({
     ...defaultFormData,
     seminarInfo: {
       ...defaultFormData.seminarInfo,
@@ -29,8 +32,14 @@ export const FormContainer: React.FC<FormContainerProps> = ({ unit }) => {
   
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStatus, setUploadStatus] = useState<string>('');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showFullScreenLoader, setShowFullScreenLoader] = useState(false);
+  const [isProcessingComplete, setIsProcessingComplete] = useState(false);
+  const [hasSubmittedOnce, setHasSubmittedOnce] = useState(false);
   
-  const { submitForm, isSubmitting, submitError } = useFormSubmit();
+  const { submitForm, isSubmitting, submitError, setSubmitError } = useFormSubmit();
 
   // SessionStorageから保存されたデータを復元（セッション終了時に自動クリア）
   useEffect(() => {
@@ -159,21 +168,144 @@ export const FormContainer: React.FC<FormContainerProps> = ({ unit }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleConfirmClick = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) {
       return;
     }
+    
+    // 確認モーダルを表示
+    setShowConfirmModal(true);
+  };
+
+  const handleSubmit = async () => {
+    // 二重送信防止
+    if (hasSubmittedOnce) {
+      return;
+    }
+    setHasSubmittedOnce(true);
+    
+    // 確認モーダルを閉じて全画面ローダーを表示
+    setShowConfirmModal(false);
+    setShowFullScreenLoader(true);
+    setIsProcessingComplete(false);
 
     console.log("送信するフォームデータ:", formData);
-    console.log("プロフィール画像URL:", formData.speechInfo.profileImageUrl);
-    console.log("レジュメファイルURL:", formData.presentationStyle.handoutFileUrl);
-    const result = await submitForm(formData);
-    if (result?.success) {
-      setIsSubmitted(true);
-      // 送信完了時にセッションデータをクリア
-      sessionStorage.removeItem(`form-data-${unit.slug}`);
+    
+    // 送信前にファイルをアップロード
+    let updatedFormData = { ...formData };
+    
+    // 進捗リセット
+    setUploadProgress(0);
+    setUploadStatus('処理を開始しています...');
+    
+    try {
+      let totalSteps = 1; // 最終送信ステップ
+      let completedSteps = 0;
+      
+      // アップロードするファイルの数を計算
+      if (formData.speechInfo.profileImageFile) totalSteps++;
+      if (formData.presentationStyle.handoutFile) totalSteps++;
+      
+      // プロフィール画像のアップロード
+      if (formData.speechInfo.profileImageFile) {
+        setUploadStatus('プロフィール画像をアップロード中...');
+        setUploadProgress((completedSteps / totalSteps) * 100);
+        
+        console.log("プロフィール画像をアップロード中...");
+        const formDataUpload = new FormData();
+        formDataUpload.append('file', formData.speechInfo.profileImageFile);
+        formDataUpload.append('fileType', 'profile');
+        formDataUpload.append('unitSlug', unit.slug);
+        formDataUpload.append('speakerName', formData.speakerInfo.name || '未入力');
+        
+        const uploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: formDataUpload,
+        });
+        
+        const uploadResult = await uploadResponse.json();
+        if (uploadResult.success) {
+          updatedFormData.speechInfo.profileImageUrl = uploadResult.fileUrl;
+          console.log("プロフィール画像アップロード成功:", uploadResult.fileUrl);
+          completedSteps++;
+          setUploadProgress((completedSteps / totalSteps) * 100);
+        } else {
+          throw new Error(uploadResult.error || 'プロフィール画像のアップロードに失敗しました');
+        }
+      }
+      
+      // レジュメファイルのアップロード
+      if (formData.presentationStyle.handoutFile) {
+        setUploadStatus('レジュメファイルをアップロード中...');
+        setUploadProgress((completedSteps / totalSteps) * 100);
+        
+        console.log("レジュメファイルをアップロード中...");
+        const formDataUpload = new FormData();
+        formDataUpload.append('file', formData.presentationStyle.handoutFile);
+        formDataUpload.append('fileType', 'handout');
+        formDataUpload.append('unitSlug', unit.slug);
+        formDataUpload.append('speakerName', formData.speakerInfo.name || '未入力');
+        
+        const uploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: formDataUpload,
+        });
+        
+        const uploadResult = await uploadResponse.json();
+        if (uploadResult.success) {
+          updatedFormData.presentationStyle.handoutFileUrl = uploadResult.fileUrl;
+          console.log("レジュメファイルアップロード成功:", uploadResult.fileUrl);
+          completedSteps++;
+          setUploadProgress((completedSteps / totalSteps) * 100);
+        } else {
+          throw new Error(uploadResult.error || 'レジュメファイルのアップロードに失敗しました');
+        }
+      }
+      
+      // Fileオブジェクトを削除（JSONに変換できないため）
+      const finalFormData = {
+        ...updatedFormData,
+        speechInfo: {
+          ...updatedFormData.speechInfo,
+          profileImageFile: undefined
+        },
+        presentationStyle: {
+          ...updatedFormData.presentationStyle,
+          handoutFile: undefined
+        }
+      };
+      
+      setUploadStatus('フォームデータを送信中...');
+      setUploadProgress((completedSteps / totalSteps) * 100);
+      
+      console.log("最終フォームデータ:", finalFormData);
+      console.log("プロフィール画像URL:", finalFormData.speechInfo.profileImageUrl);
+      console.log("レジュメファイルURL:", finalFormData.presentationStyle.handoutFileUrl);
+      
+      const result = await submitForm(finalFormData);
+      if (result?.success) {
+        completedSteps++;
+        setUploadProgress(100);
+        setUploadStatus('送信完了！');
+        setIsProcessingComplete(true);
+        
+        // 少し待ってから完了画面へ
+        setTimeout(() => {
+          setShowFullScreenLoader(false);
+          setIsSubmitted(true);
+          // 送信完了時にセッションデータをクリア
+          sessionStorage.removeItem(`form-data-${unit.slug}`);
+        }, 2000);
+      }
+    } catch (error) {
+      console.error("送信エラー:", error);
+      setUploadProgress(0);
+      setUploadStatus('');
+      setShowFullScreenLoader(false);
+      setHasSubmittedOnce(false); // エラー時は再送信を許可
+      setSubmitError(error instanceof Error ? error.message : '送信に失敗しました');
     }
   };
 
@@ -210,8 +342,26 @@ export const FormContainer: React.FC<FormContainerProps> = ({ unit }) => {
   }
 
   return (
-    <Container>
-      <form onSubmit={handleSubmit} className="py-8 space-y-8">
+    <>
+      {/* 確認モーダル */}
+      <ConfirmationModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleSubmit}
+        formData={formData}
+        isSubmitting={isSubmitting}
+      />
+      
+      {/* 全画面ローダー */}
+      <FullScreenLoader
+        isVisible={showFullScreenLoader}
+        status={uploadStatus}
+        progress={uploadProgress}
+        isCompleted={isProcessingComplete}
+      />
+      
+      <Container>
+        <form onSubmit={handleConfirmClick} className="py-8 space-y-8">
         <SeminarInfo
           data={formData.seminarInfo}
           onChange={(data) => setFormData({ ...formData, seminarInfo: data })}
@@ -255,33 +405,28 @@ export const FormContainer: React.FC<FormContainerProps> = ({ unit }) => {
           </div>
         )}
 
-        <div className="flex justify-center gap-4 pt-8">
-          <Button
-            type="button"
-            onClick={handleReset}
-            variant="outline"
-            size="lg"
-            className="min-w-32"
-          >
-            リセット
-          </Button>
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            size="lg"
-            className="min-w-48"
-          >
-            {isSubmitting ? (
-              <span className="flex items-center gap-2">
-                <LoadingSpinner size="sm" color="white" />
-                送信中...
-              </span>
-            ) : (
-              '送信する'
-            )}
-          </Button>
-        </div>
-      </form>
-    </Container>
+          <div className="flex justify-center gap-4 pt-8">
+            <Button
+              type="button"
+              onClick={handleReset}
+              variant="outline"
+              size="lg"
+              className="min-w-32"
+              disabled={hasSubmittedOnce}
+            >
+              リセット
+            </Button>
+            <Button
+              type="submit"
+              disabled={hasSubmittedOnce}
+              size="lg"
+              className="min-w-48 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700"
+            >
+              確認画面へ
+            </Button>
+          </div>
+        </form>
+      </Container>
+    </>
   );
 };

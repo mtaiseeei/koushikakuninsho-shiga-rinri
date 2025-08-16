@@ -32,11 +32,13 @@ export interface SpeechInfo {
   profile: string;
   ethicsHistory?: string;
   profileImageUrl?: string; // Google Drive URL
+  profileImageFile?: File; // プロフィール画像ファイル（送信時まで保持）
 }
 
 export interface PresentationStyle {
   handout: 'bring' | 'none' | 'print';
   handoutFileUrl?: string; // Google Drive URL
+  handoutFile?: File; // レジュメファイル（送信時まで保持）
   projector: 'use' | 'not-use'; // 使用する/使用しない
   projectorDetails?: { // プロジェクター「使用しない」時のみ表示
     device: 'bring' | 'prepare' | 'none'; // スライド投影用のデバイス
@@ -53,7 +55,7 @@ export interface Accommodation {
   notes?: string; // その他連絡事項（自由入力）
 }
 
-export interface FormData {
+export interface KoushiFormData {
   seminarInfo: SeminarInfo;
   speakerInfo: SpeakerInfo;
   speechInfo: SpeechInfo;
@@ -61,7 +63,7 @@ export interface FormData {
   accommodation: Accommodation;
 }
 
-export const defaultFormData: FormData = {
+export const defaultFormData: KoushiFormData = {
   seminarInfo: {
     unitName: '',
     unitSlug: '',
