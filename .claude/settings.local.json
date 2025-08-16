@@ -5,7 +5,13 @@
       "Bash(rm:*)",
       "Bash(git rm:*)",
       "Bash(git add:*)",
-      "Bash(npx vercel:*)"
+      "Bash(npx vercel:*)",
+      "Bash(cat:*)",
+      "Bash(test:*)",
+      "Bash(sed:*)",
+      "Bash(grep:*)",
+      "Bash(curl:*)",
+      "Bash(mv:*)"
     ],
     "deny": [],
     "ask": []

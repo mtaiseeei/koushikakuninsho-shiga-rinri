@@ -1,19 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleSheetsService } from '@/lib/services/google-sheets';
+import { appendToSheet } from '@/lib/services/google-sheets';
 import { FormData } from '@/types/form';
+
+// Node.jsランタイムを明示的に指定
+export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
     const data: FormData = await request.json();
+    
+    console.log('=== フォーム送信処理開始 ===');
+    console.log('受信データ:', {
+      unit: data.seminarInfo.unitName,
+      speaker: data.speakerInfo.name,
+      profileImageUrl: data.speechInfo.profileImageUrl,
+      resumeUrl: data.presentationStyle.handoutFileUrl,
+    });
 
     // Google Sheetsにデータを追加
-    const sheetsService = new GoogleSheetsService();
-    const result = await sheetsService.appendFormData(data);
+    await appendToSheet(data);
+    
+    console.log('Sheets書き込み完了');
 
     return NextResponse.json({
       success: true,
       message: '講師確認書を送信しました',
-      sheetRowId: result.rowId,
       submissionId: `${data.seminarInfo.unitSlug}-${Date.now()}`,
     });
   } catch (error) {

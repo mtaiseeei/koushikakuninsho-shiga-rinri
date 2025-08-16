@@ -34,8 +34,11 @@ export const SpeechInfoComponent: React.FC<SpeechInfoProps> = ({
   };
 
   const handleProfileImageUpload = async (file: File) => {
+    console.log("プロフィール画像アップロード開始:", file.name);
     const fileUrl = await uploadFile(file);
+    console.log("アップロード結果:", fileUrl);
     if (fileUrl) {
+      console.log("フォームデータ更新 - profileImageUrl:", fileUrl);
       onChange({ ...data, profileImageUrl: fileUrl });
     }
   };
@@ -110,11 +113,12 @@ export const SpeechInfoComponent: React.FC<SpeechInfoProps> = ({
           accept={{
             'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.heic']
           }}
-          maxSize={5 * 1024 * 1024} // 5MB
+          maxSize={5 * 1024 * 1024}
           onFileSelect={handleProfileImageUpload}
           onFileRemove={handleProfileImageRemove}
           isUploading={isUploading}
           error={errors.profileImageUrl}
+          uploadedUrl={data.profileImageUrl}
           helpText="PNG・JPG・HEIC形式対応（最大5MB）"
         />
       </div>

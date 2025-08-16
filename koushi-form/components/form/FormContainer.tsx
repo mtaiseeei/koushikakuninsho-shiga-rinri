@@ -108,7 +108,7 @@ export const FormContainer: React.FC<FormContainerProps> = ({ unit }) => {
     if (!formData.speakerInfo.nameKana.trim()) {
       newErrors['nameKana'] = 'ふりがなは必須です';
     } else {
-      const hiraganaRegex = /^[ひらがな\s]*$/;
+      const hiraganaRegex = /^[\u3041-\u3096\s]*$/;
       if (!hiraganaRegex.test(formData.speakerInfo.nameKana)) {
         newErrors['nameKana'] = 'ふりがなはひらがなで入力してください';
       }
@@ -166,6 +166,9 @@ export const FormContainer: React.FC<FormContainerProps> = ({ unit }) => {
       return;
     }
 
+    console.log("送信するフォームデータ:", formData);
+    console.log("プロフィール画像URL:", formData.speechInfo.profileImageUrl);
+    console.log("レジュメファイルURL:", formData.presentationStyle.handoutFileUrl);
     const result = await submitForm(formData);
     if (result?.success) {
       setIsSubmitted(true);
@@ -226,7 +229,7 @@ export const FormContainer: React.FC<FormContainerProps> = ({ unit }) => {
           onChange={(data) => setFormData({ ...formData, speechInfo: data })}
           errors={errors}
           unitSlug={unit.slug}
-          speakerName={formData.speakerInfo.name}
+          speakerName={formData.speakerInfo.name || '未入力'}
         />
 
         <PresentationStyleComponent
@@ -234,7 +237,7 @@ export const FormContainer: React.FC<FormContainerProps> = ({ unit }) => {
           onChange={(data) => setFormData({ ...formData, presentationStyle: data })}
           errors={errors}
           unitSlug={unit.slug}
-          speakerName={formData.speakerInfo.name}
+          speakerName={formData.speakerInfo.name || '未入力'}
         />
 
         <AccommodationComponent

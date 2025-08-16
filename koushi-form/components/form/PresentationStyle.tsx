@@ -113,6 +113,7 @@ export const PresentationStyleComponent: React.FC<PresentationStyleProps> = ({
               onFileRemove={handleHandoutFileRemove}
               isUploading={isUploading}
               error={errors.handoutFileUrl}
+              uploadedUrl={data.handoutFileUrl}
               helpText="PDF・Word形式対応（最大10MB）"
             />
           </div>
