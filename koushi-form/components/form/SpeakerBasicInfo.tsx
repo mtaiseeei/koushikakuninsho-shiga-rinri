@@ -85,7 +85,6 @@ export const SpeakerBasicInfo: React.FC<SpeakerBasicInfoProps> = ({
             value={data.name}
             onChange={(value) => handleInputChange('name', value)}
             error={errors.name}
-            helpText="表示の際には末尾に「様」が付きます"
           />
 
           <Input
@@ -183,26 +182,30 @@ export const SpeakerBasicInfo: React.FC<SpeakerBasicInfoProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Input
-            label="携帯電話"
-            required
-            type="tel"
-            value={data.mobile}
-            onChange={(value) => handleInputChange('mobile', value)}
-            error={errors.mobile}
-            placeholder="090-1234-5678"
-          />
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">連絡先</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Input
+              label="携帯電話"
+              required
+              type="tel"
+              value={data.mobile}
+              onChange={(value) => handleInputChange('mobile', value)}
+              error={errors.mobile}
+              placeholder=""
+            />
 
-          <Input
-            label="Email"
-            required
-            type="email"
-            value={data.email}
-            onChange={(value) => handleInputChange('email', value)}
-            error={errors.email}
-            placeholder="example@example.com"
-          />
+            <Input
+              label="Email"
+              required
+              type="email"
+              value={data.email}
+              onChange={(value) => handleInputChange('email', value)}
+              error={errors.email}
+              placeholder=""
+            />
+          </div>
         </div>
       </div>
     </Card>

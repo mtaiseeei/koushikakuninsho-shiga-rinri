@@ -24,6 +24,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     className,
     value,
     onChange,
+    style,
     ...props
   }, ref) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,13 +55,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           maxLength={maxLength}
           className={cn(
             'w-full px-4 py-3 text-base border-2 border-gray-200 rounded-lg bg-white',
-            'text-gray-900 placeholder:text-gray-300',
+            'text-gray-900 placeholder-gray-400',
             'focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200',
             'hover:border-gray-300 transition-all duration-200',
             'disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed',
             error && 'border-red-500 focus:border-red-500 focus:ring-red-200',
             className
           )}
+          style={style}
           {...props}
         />
         

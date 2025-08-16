@@ -162,9 +162,17 @@ export const PresentationStyleComponent: React.FC<PresentationStyleProps> = ({
                   error={errors['projectorDetails.cable']}
                   options={[
                     { value: 'HDMI', label: 'HDMI' },
-                    { value: 'VGA', label: '15ピン' }
+                    { value: 'USB-TypeC', label: 'USB-TypeC' }
                   ]}
                 />
+                
+                {data.projectorDetails?.cable === 'USB-TypeC' && (
+                  <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm font-medium text-blue-700">
+                      ⚠️ USB-CからHDMIへの変換アダプタは必ずご持参ください
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>

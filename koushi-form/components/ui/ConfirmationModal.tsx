@@ -182,6 +182,19 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                     <dt className="text-gray-600">プロジェクター</dt>
                     <dd className="font-medium">{getProjectorText(formData.presentationStyle.projector)}</dd>
                   </div>
+                  {formData.presentationStyle.projectorDetails?.cable && (
+                    <div>
+                      <dt className="text-gray-600">出力ケーブル</dt>
+                      <dd className="font-medium">
+                        {formData.presentationStyle.projectorDetails.cable}
+                        {formData.presentationStyle.projectorDetails.cable === 'USB-TypeC' && (
+                          <span className="text-blue-600 text-xs ml-2">
+                            (変換アダプタ要持参)
+                          </span>
+                        )}
+                      </dd>
+                    </div>
+                  )}
                 </dl>
               </section>
 

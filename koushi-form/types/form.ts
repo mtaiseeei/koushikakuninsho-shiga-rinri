@@ -43,7 +43,7 @@ export interface PresentationStyle {
   projectorDetails?: { // プロジェクター「使用しない」時のみ表示
     device: 'bring' | 'prepare' | 'none'; // スライド投影用のデバイス
     deviceOS?: 'Windows' | 'Mac' | 'iOS' | 'Android';
-    cable?: 'HDMI' | 'VGA'; // 15ピン = VGA
+    cable?: 'HDMI' | 'USB-TypeC'; // USB-TypeC or HDMI
   };
   whiteboard: 'use' | 'not-use'; // 使用する/使用しない
 }

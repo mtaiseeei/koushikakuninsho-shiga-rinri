@@ -405,25 +405,42 @@ export const FormContainer: React.FC<FormContainerProps> = ({ unit }) => {
           </div>
         )}
 
-          <div className="flex justify-center gap-4 pt-8">
-            <Button
-              type="button"
-              onClick={handleReset}
-              variant="outline"
-              size="lg"
-              className="min-w-32"
-              disabled={hasSubmittedOnce}
-            >
-              リセット
-            </Button>
-            <Button
-              type="submit"
-              disabled={hasSubmittedOnce}
-              size="lg"
-              className="min-w-48 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700"
-            >
-              確認画面へ
-            </Button>
+          <div className="space-y-4">
+            <div className="flex justify-center gap-4 pt-8">
+              <Button
+                type="button"
+                onClick={handleReset}
+                variant="outline"
+                size="lg"
+                className="min-w-32"
+                disabled={hasSubmittedOnce}
+              >
+                リセット
+              </Button>
+              <Button
+                type="submit"
+                disabled={hasSubmittedOnce}
+                size="lg"
+                className="min-w-48 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700"
+              >
+                確認画面へ
+              </Button>
+            </div>
+            
+            {/* エラーリスト表示 */}
+            {Object.keys(errors).length > 0 && (
+              <div className="max-w-2xl mx-auto bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="font-semibold text-red-800 mb-2 flex items-center gap-2">
+                  <span className="text-red-500">⚠</span>
+                  入力内容にエラーがあります
+                </p>
+                <ul className="list-disc list-inside space-y-1 text-sm text-red-700">
+                  {Object.entries(errors).map(([key, message]) => (
+                    <li key={key}>{message}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </form>
       </Container>

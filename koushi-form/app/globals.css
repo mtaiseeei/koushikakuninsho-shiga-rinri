@@ -21,7 +21,8 @@ input, textarea, select {
 }
 
 input::placeholder, textarea::placeholder {
-  color: #d1d5db !important;
+  color: #9ca3af !important;
+  opacity: 1 !important;
 }
 
 /* 選択された状態のテキスト色を確実に設定 */
