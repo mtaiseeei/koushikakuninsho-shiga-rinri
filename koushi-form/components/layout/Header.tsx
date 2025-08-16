@@ -67,37 +67,29 @@ export const Header: React.FC<HeaderProps> = ({ unitName }) => {
             </div>
           </div>
           
-          {/* 右側の装飾要素 */}
-          <div className="hidden lg:flex items-center gap-3">
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
+          {/* 右側のリンクボタン */}
+          <div className="hidden lg:flex items-center">
+            <a 
+              href="https://www.shiga-rinri.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-white/20 backdrop-blur-sm hover:bg-white/30 px-4 py-2 rounded-lg border border-white/30 transition-all duration-200"
+            >
               <svg 
-                className="w-4 h-4 text-blue-200" 
-                fill="currentColor" 
-                viewBox="0 0 20 20"
+                className="w-4 h-4 text-white" 
+                fill="none" 
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
                 <path 
-                  fillRule="evenodd" 
-                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" 
-                  clipRule="evenodd" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" 
                 />
               </svg>
-              <span className="text-sm text-blue-100 font-medium">オンライン申請</span>
-            </div>
-            
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
-              <svg 
-                className="w-4 h-4 text-blue-200" 
-                fill="currentColor" 
-                viewBox="0 0 20 20"
-              >
-                <path 
-                  fillRule="evenodd" 
-                  d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" 
-                  clipRule="evenodd" 
-                />
-              </svg>
-              <span className="text-sm text-blue-100 font-medium">24時間受付</span>
-            </div>
+              <span className="text-sm text-white font-medium">滋賀県倫理法人会HPへ</span>
+            </a>
           </div>
         </div>
       </div>
